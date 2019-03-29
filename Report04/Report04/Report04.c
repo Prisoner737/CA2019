@@ -38,7 +38,7 @@ struct IRManager {
 
 struct IRManager MyIR;
 
-union rtype {
+struct rtype {
 	unsigned int I;
 	struct rtype {
 		unsigned int opcode : 6;
@@ -50,17 +50,17 @@ union rtype {
 	} RI;
 } IR;
 
-union itype {
+struct itype {
 	unsigned int I;
 	struct itype {
 		unsigned int opcode : 6;
 		unsigned int rs : 5;
 		unsigned int rt : 5;
 		unsigned int offset : 16;
-	} II;
+	} III;
 } II;
 
-union jtype {
+struct jtype {
 	unsigned int I;
 	struct jtype {
 		unsigned int opcode : 6;
@@ -108,25 +108,28 @@ int main()
 		int opc = opcparser(6, i);
 		int fct = fctparser(6, i);
 
+		Instrparser(i, opc, fct);
 		printf("Opc: %2x, Fct: %2x, ", opc, fct);
-		if (opc == 0)
-			printf("Inst: %s\n", futable[fct]);
-		else
-			printf("Inst: %s\n", optable[opc]);
-		Instrparser(i, opc);
+		if (opc == 0) {
+			printf("Inst: %s, ", futable[fct]);
+			printf("Rs: %2x, Rt: %2x, Rd: %2x, Sh: %2x", IR.RI.rs, IR.RI.rt, IR.RI.rd, IR.RI.sh);
+		}
+		else if ((opc == 2) || (opc == 3)) {
+			printf("Inst: %s, ", optable[opc]);
+			printf("Jump Address: %2x ", IJ.JI.ja);
+		}
+		else {
+			printf("Inst: %s, ", optable[opc]);
+			printf("Rs: %2x, Rt: %2x, Offset: %2x ", II.III.rs, II.III.rt, II.III.offset);
+		}
+		printf("\n");
 	}
 
 	return 0;
 }
 
-int IRparser()
-{
 
-
-}
-
-
-int Instrparser(int pos, int opc)
+int Instrparser(int pos, int opc, int fct)
 {
 	int i, j, result = 0;
 	unsigned char iR[32] = { 0, };
@@ -143,26 +146,54 @@ int Instrparser(int pos, int opc)
 	if (opc == 0) {
 		for (i = 6; i < 26; i+=5) {
 			result = 0;
-			for (j = 0; i < 5; j++) {
-				result += (iR[i+j] * pow(2.0, 6 - i));
+			for (j = 0; j < 5; j++) {
+				result += (iR[i+j] * pow(2.0, 4 - j));
+				//printf("i: %d, iR[i+j] : %d  result: %d\n",i, iR[i + j], result);
 			}
 			if (i == 6)
 				IR.RI.rs = result;
 			else if (i == 11)
 				IR.RI.rt = result;
 			else if (i == 16)
-				IR.RI.rs = result;
+				IR.RI.rd = result;
 			else
 				IR.RI.sh = result;
 		}
+		IR.RI.opcode = opc;
+		IR.RI.funct = fct;
 	}
-	else if(){
+	else if ((opc == 2) || (opc == 3)) {
+		result = 0;
+		for (i = 6; i < 32; i++)
+			result += (iR[i] * pow(2.0, 31 - i));
+		IJ.JI.ja = result;
+		IJ.JI.opcode = opc;
+	}
+	else {
+;		for (i = 6; i < 16; i += 5) {
+			result = 0;
+			for (j = 0; j < 5; j++) {
+				result += (iR[i + j] * pow(2.0, 4 - j));
+				//printf("i: %d, iR[i+j] : %d  result: %d\n", i, iR[i + j], result);
+			}
+			if (i == 6)
+				II.III.rs = result;
+			else
+				II.III.rt = result;
+		}
+		result = 0;
+		for (;i < 32; i++)
+			result += (iR[i] * pow(2.0, 31 - i));
+		II.III.opcode = opc;
+		II.III.offset = result;
+	}
 
-	}
 
 	printf("parsed %2d ir : ", pos);
-	for (i = 0; i < 32; i++) {
-		printf("%d ", iR[i]);
+	for (i = 1; i <=32; i++) {
+		printf("%d ", iR[i-1]);
+		if (i % 4 == 0)
+			printf("   ");
 	}
 	printf("\n");
 }
@@ -220,7 +251,6 @@ int MipsNumParser(int start, int end)
 		for (j = 0; j < 4; j++)
 		{
 			MyIR.IR += MEM[i + j] * pow(16.0, 3 - j);
-			//PrintBinary(MEM[i + j]);
 		}
 	}
 	return MyIR.IR;
