@@ -45,6 +45,7 @@ union rtype {
 		unsigned int rs : 5;
 		unsigned int rt : 5;
 		unsigned int rd : 5;
+		unsigned int sh : 5;
 		unsigned int funct : 6;
 	} RI;
 } IR;
@@ -66,37 +67,6 @@ union jtype {
 		unsigned int ja : 26;
 	} JI;
 } IJ;
-
-//
-//typedef struct basic_type
-//{
-//	unsigned int opcode : 6;
-//	unsigned int rs : 5;
-//	unsigned int rt : 5;
-//	unsigned int rd : 5;
-//	unsigned int funct : 6;
-//}basic_type;
-//
-//union rtype
-//{
-//	unsigned char ident;
-//	basic_type inner;
-//} IR;
-//
-//union itype 
-//{	
-//	unsigned char ident;
-//	unsigned int or_os;
-//	basic_type inner;
-//} II;
-//
-//union jtype
-//{
-//	unsigned char ident;
-//	unsigned int addr;
-//	basic_type inner;
-//} IJ;
-
 
 int main()
 {
@@ -158,7 +128,7 @@ int IRparser()
 
 int Instrparser(int pos, int opc)
 {
-	int i, j = 0;
+	int i, j, result = 0;
 	unsigned char iR[32] = { 0, };
 
 	for (j = 0; j < 4; j++) {
@@ -171,10 +141,22 @@ int Instrparser(int pos, int opc)
 		}
 	}
 	if (opc == 0) {
-
-
+		for (i = 6; i < 26; i+=5) {
+			result = 0;
+			for (j = 0; i < 5; j++) {
+				result += (iR[i+j] * pow(2.0, 6 - i));
+			}
+			if (i == 6)
+				IR.RI.rs = result;
+			else if (i == 11)
+				IR.RI.rt = result;
+			else if (i == 16)
+				IR.RI.rs = result;
+			else
+				IR.RI.sh = result;
+		}
 	}
-	else {
+	else if(){
 
 	}
 
