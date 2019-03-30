@@ -29,9 +29,9 @@ char *futable[] = { "sll", "none", "srl", "sra", "none", "none", "none", "none",
 				   "add", "none", "sub", "none", "and", "or", "xor", "nor",
 				   "none", "none", "slt", "none", "none", "none", "none", "none", };
 
-char *memNameTable[] = {"r0", "at", "v0","v1","a0","a1","a2","a3","t0","t1","t2",
-						"t3","t4","t5","t6","t7","s0","s1","s2","s3","s4","s5",
-						"s6","s7","t8","t9","k0","k1","gp","SP","s8","ra"};
+char *memNameTable[] = {"$r0", "$at", "$v0","$v1","$a0","$a1","$a2","$a3","$t0","$t1","$t2",
+						"$t3","$t4","$t5","$t6","$t7","$s0","$s1","$s2","$s3","$s4","$s5",
+						"$s6","$s7","$t8","$t9","$k0","$k1","$gp","$SP","$s8","$ra"};
 
 
 struct IRManager {
@@ -123,7 +123,7 @@ int main()
 		}
 		else {
 			printf("%s ", optable[opc]);
-			printf("%2s, %2s, %2x ", memNameTable[II.III.rs], memNameTable[II.III.rt], II.III.offset);
+			printf("%2s, %2s, 0x%x ", memNameTable[II.III.rs], memNameTable[II.III.rt], II.III.offset);
 		}
 		printf("\n");
 	}
