@@ -8,7 +8,6 @@ int PrintBinary(char a);
 int MipsNumParser(int start, int end);
 int opcparser(int irnum, int pos);
 int fctparser(int irnum, int pos);
-int Instrparser(int pos);
 
 unsigned char *MEM;
 unsigned char ReadAllMasking = 0xFF;
@@ -29,6 +28,10 @@ char *futable[] = { "sll", "none", "srl", "sra", "none", "none", "none", "none",
 				   "mul", "none", "none", "none", "none", "none", "none", "none",
 				   "add", "none", "sub", "none", "and", "or", "xor", "nor",
 				   "none", "none", "slt", "none", "none", "none", "none", "none", };
+
+char *memNameTable[] = {"r0", "at", "v0","v1","a0","a1","a2","a3","t0","t1","t2",
+						"t3","t4","t5","t6","t7","s0","s1","s2","s3","s4","s5",
+						"s6","s7","t8","t9","k0","k1","gp","SP","s8","ra"};
 
 
 struct IRManager {
@@ -79,7 +82,7 @@ int main()
 	int opc, fac;
 
 
-	err = fopen_s(&pFile, "ex01.bin", "rb");
+	err = fopen_s(&pFile, "ex04.bin", "rb");
 	if (err) {
 		printf("Cannot open file\n");
 		return 1;
@@ -109,22 +112,21 @@ int main()
 		int fct = fctparser(6, i);
 
 		Instrparser(i, opc, fct);
-		printf("Opc: %2x, Fct: %2x, ", opc, fct);
+		//printf("Opc: %2x, Fct: %2x, ", opc, fct);
 		if (opc == 0) {
-			printf("Inst: %s, ", futable[fct]);
-			printf("Rs: %2x, Rt: %2x, Rd: %2x, Sh: %2x", IR.RI.rs, IR.RI.rt, IR.RI.rd, IR.RI.sh);
+			printf("%s ", futable[fct]);
+			printf("%s, %2s, %2s", memNameTable[IR.RI.rs], memNameTable[IR.RI.rt], memNameTable[IR.RI.rd]);
 		}
 		else if ((opc == 2) || (opc == 3)) {
-			printf("Inst: %s, ", optable[opc]);
-			printf("Jump Address: %2x ", IJ.JI.ja);
+			printf("%s ", optable[opc]);
+			printf("0x%2x ", IJ.JI.ja);
 		}
 		else {
-			printf("Inst: %s, ", optable[opc]);
-			printf("Rs: %2x, Rt: %2x, Offset: %2x ", II.III.rs, II.III.rt, II.III.offset);
+			printf("%s ", optable[opc]);
+			printf("%2s, %2s, %2x ", memNameTable[II.III.rs], memNameTable[II.III.rt], II.III.offset);
 		}
 		printf("\n");
 	}
-	printf("This is End of Progeam! \n");
 	return 0;
 }
 
@@ -148,7 +150,6 @@ int Instrparser(int pos, int opc, int fct)
 			result = 0;
 			for (j = 0; j < 5; j++) {
 				result += (iR[i+j] * pow(2.0, 4 - j));
-				//printf("i: %d, iR[i+j] : %d  result: %d\n",i, iR[i + j], result);
 			}
 			if (i == 6)
 				IR.RI.rs = result;
@@ -174,7 +175,6 @@ int Instrparser(int pos, int opc, int fct)
 			result = 0;
 			for (j = 0; j < 5; j++) {
 				result += (iR[i + j] * pow(2.0, 4 - j));
-				//printf("i: %d, iR[i+j] : %d  result: %d\n", i, iR[i + j], result);
 			}
 			if (i == 6)
 				II.III.rs = result;
@@ -189,13 +189,13 @@ int Instrparser(int pos, int opc, int fct)
 	}
 
 
-	printf("parsed %2d ir : ", pos);
-	for (i = 1; i <=32; i++) {
-		printf("%d ", iR[i-1]);
-		if (i % 4 == 0)
-			printf("   ");
-	}
-	printf("\n");
+	//printf("parsed %2d ir : ", pos);
+	//for (i = 1; i <=32; i++) {
+	//	printf("%d ", iR[i-1]);
+	//	if (i % 4 == 0)
+	//		printf("   ");
+	//}
+	//printf("\n");
 }
 
 
