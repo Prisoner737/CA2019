@@ -1,11 +1,101 @@
-﻿// Report05.cpp : 이 파일에는 'main' 함수가 포함됩니다. 거기서 프로그램 실행이 시작되고 종료됩니다.
-//
+﻿#include "stdio.h"
 
-#include "stdio.h"
+void test();
+int ALU(int X, int Y, int C, int* Z);
+int logicOpreation(int X, int Y, int C);
+int logicOpreation(int X, int Y, int C);
+int addSubstract(int X, int Y, int C);
+int shiftOperation(int V, int Y, int C);
+int checkZero(int X, int Y, int C, int* result);
+int checkSetLess(int X, int Y);
+
+
 
 int main()
 {
-	printf("test");
+	test();
+
+	return 0;
+}
+
+void test(void) {
+
+	int outputT = 0;
+	int x, y, c, s, z, i;
+
+	printf("Please set your output type<0: integer, 1: Hexadecimal> : ");
+	scanf_s("%d", &outputT, sizeof(int));
+	printf("\n");
+
+	if (outputT == 0) {
+		while (1) {
+
+			z = -1;
+			while (1) {
+				printf("Please input your commnad <0~15> (-1 for exit) : ");
+				scanf_s("%d", &c, sizeof(int));
+
+				if ((c < 16) && (c > -2))
+					break;
+			}
+			if (c == -1)
+				break;
+
+			printf("Please input your first(x) value : ");
+			scanf_s("%8d", &x, sizeof(int));
+			printf("Please input your second(y) value : ");
+			scanf_s("%8d", &y, sizeof(int));
+
+
+			s = ALU(x, y, c, &z);
+			printf("X: %8d, Y: %8d\n", x, y);
+			if (z == -1) {
+				printf("s: %8d \n\n", s);
+			}
+			else {
+				printf("s: %8d, ", s);
+				printf("z: %8d\n\n", z);
+			}
+		}
+	}
+	else {
+		while (1) {
+
+			z = -1;
+			while (1) {
+				printf("Please input your commnad <0~f> (-1 for exit) : ");
+				scanf_s("%x", &c, sizeof(int));
+
+				if ((c < 16) && (c > -2))
+					break;
+			}
+			if (c == -1)
+				break;
+
+			printf("Please input your first(x) value : ");
+			scanf_s("%8x", &x, sizeof(int));
+			printf("Please input your second(y) value : ");
+			scanf_s("%8x", &y, sizeof(int));
+
+			s = ALU(x, y, c, &z);
+			printf("X: %8x, Y: %8x\n", x, y);
+
+			if (z == -1) {
+				printf("s: %8x \n\n", s);
+			}
+			else {
+				printf("s: %8x, ", s);
+				printf("z: %8x\n\n", z);
+			}
+		}
+	}
+
+	printf("Program END\n");
+	printf("Report-CAU05\n");
+	printf("201500122 고 병 현\n");
+
+	return 0;
+
 }
 
 int ALU(int X, int Y, int C, int* Z) {
@@ -48,7 +138,7 @@ int logicOpreation(int X, int Y, int C) {
 		return X ^ Y;
 	}
 	else {
-		return ~(X ^ Y);
+		return ~(X | Y);
 	}
 }
 
